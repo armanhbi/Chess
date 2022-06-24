@@ -60,5 +60,9 @@ public class Game {
 	public void print() {
 		System.out.println(toString(DEFAULT_STRINGTYPE));
 	}
+	
+	public GameBoard getGameBoard() {
+		return gameBoard;
+	}
 
 }

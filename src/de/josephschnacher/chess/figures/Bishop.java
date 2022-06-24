@@ -31,11 +31,11 @@ public class Bishop extends Piece {
 		boolean inside = x < 8 && y < 8;
 		while (inside && (field[x][y].getPiece() == null || field[x][y].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(x, y));
-			x++;
-			y++;
 			if (field[x][y].getPiece() != null) {
 				break;
 			}
+			x++;
+			y++;
 		}
 
 		// diagonal links oben
@@ -44,11 +44,11 @@ public class Bishop extends Piece {
 		inside = x >= 0 && y < 8;
 		while (inside && (field[x][y].getPiece() == null || field[x][y].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(x, y));
-			x--;
-			y++;
 			if (field[x][y].getPiece() != null) {
 				break;
 			}
+			x--;
+			y++;
 		}
 
 		// diagonal rechts unten
@@ -57,11 +57,11 @@ public class Bishop extends Piece {
 		inside = x < 8 && y >= 0;
 		while (inside && (field[x][y].getPiece() == null || field[x][y].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(x, y));
-			x++;
-			y--;
 			if (field[x][y].getPiece() != null) {
 				break;
 			}
+			x++;
+			y--;
 		}
 
 		// diagonal links unten
@@ -70,11 +70,11 @@ public class Bishop extends Piece {
 		inside = x >= 0 && y >= 0;
 		while (inside && (field[x][y].getPiece() == null || field[x][y].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(x, y));
-			x--;
-			y--;
 			if (field[x][y].getPiece() != null) {
 				break;
 			}
+			x--;
+			y--;
 		}
 		return allAllowed;
 	}

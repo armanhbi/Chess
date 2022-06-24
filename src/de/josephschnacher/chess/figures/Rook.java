@@ -30,10 +30,10 @@ public class Rook extends Piece {
 		while (index < 8
 				&& (field[curX][index].getPiece() == null || field[curX][index].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(curX, index));
-			index++;
 			if (field[curX][index].getPiece() != null) {
 				break;
 			}
+			index++;
 		}
 
 		// runter
@@ -41,10 +41,10 @@ public class Rook extends Piece {
 		while (index >= 0
 				&& (field[curX][index].getPiece() == null || field[curX][index].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(curX, index));
-			index--;
 			if (field[curX][index].getPiece() != null) {
 				break;
 			}
+			index--;
 		}
 
 		// rechts
@@ -52,10 +52,10 @@ public class Rook extends Piece {
 		while (index < 8
 				&& (field[index][curY].getPiece() == null || field[index][curY].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(index, curY));
-			index++;
 			if (field[index][curY].getPiece() != null) {
 				break;
 			}
+			index++;
 		}
 
 		// links
@@ -63,10 +63,10 @@ public class Rook extends Piece {
 		while (index >= 0
 				&& (field[index][curY].getPiece() == null || field[index][curY].getPiece().getColor() != getColor())) {
 			allAllowed.add(new Position(index, curY));
-			index--;
 			if (field[index][curY].getPiece() != null) {
 				break;
 			}
+			index--;
 		}
 		return allAllowed;
 	}

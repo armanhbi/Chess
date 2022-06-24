@@ -1,5 +1,7 @@
 package de.josephschnacher.chess.logic;
 
+import de.josephschnacher.chess.figures.Piece;
+
 public class Field {
 
 	private Piece piece;

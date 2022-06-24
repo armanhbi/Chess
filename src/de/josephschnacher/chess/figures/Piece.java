@@ -1,19 +1,24 @@
-package de.josephschnacher.chess.logic;
+package de.josephschnacher.chess.figures;
 
 import java.util.List;
 
+import de.josephschnacher.chess.logic.Color;
+import de.josephschnacher.chess.logic.GameBoard;
+import de.josephschnacher.chess.logic.Position;
+
 public abstract class Piece {
 
-	private String name;
+	private final String name;
+	private final char shortname;
+	private final Color color;
+
 	private Position position;
 
-	public Piece() {
-		this.name = getClass().getSimpleName();
-	}
-
-	public Piece(Position pos) {
+	public Piece(Position pos, char shortname, Color color) {
 		this.position = pos;
 		this.name = getClass().getSimpleName();
+		this.shortname = shortname;
+		this.color = color;
 	}
 
 	public boolean isAllowed(GameBoard gameBoard, Position position) {
@@ -30,11 +35,21 @@ public abstract class Piece {
 		return position;
 	}
 
+	public void setPosition(Position position) {
+		this.position = position;
+	}
+
 	public String getName() {
 		return name;
 	}
-	
-	public abstract char getShortName();
+
+	public char getShortName() {
+		return shortname;
+	}
+
+	public Color getColor() {
+		return color;
+	}
 
 	public String toString() {
 		if (position == null) {

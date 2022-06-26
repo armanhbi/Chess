@@ -1,6 +1,6 @@
 package de.josephschnacher.chess.logic;
 
-public enum Color {
+public enum PieceColor {
 
 	WHITE, BLACK
 

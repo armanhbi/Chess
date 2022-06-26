@@ -33,34 +33,34 @@ public class GameBoard {
 
 	public void fillStart() {
 		// WHITE
-		field[0][0].setPiece(new Rook(0, 0, Color.WHITE));
-		field[1][0].setPiece(new Knight(1, 0, Color.WHITE));
-		field[2][0].setPiece(new Bishop(2, 0, Color.WHITE));
-		field[3][0].setPiece(new Queen(3, 0, Color.WHITE));
-		field[4][0].setPiece(new King(4, 0, Color.WHITE));
-		field[5][0].setPiece(new Bishop(5, 0, Color.WHITE));
-		field[6][0].setPiece(new Knight(6, 0, Color.WHITE));
-		field[7][0].setPiece(new Rook(7, 0, Color.WHITE));
+		field[0][0].setPiece(new Rook(0, 0, PieceColor.WHITE));
+		field[1][0].setPiece(new Knight(1, 0, PieceColor.WHITE));
+		field[2][0].setPiece(new Bishop(2, 0, PieceColor.WHITE));
+		field[3][0].setPiece(new Queen(3, 0, PieceColor.WHITE));
+		field[4][0].setPiece(new King(4, 0, PieceColor.WHITE));
+		field[5][0].setPiece(new Bishop(5, 0, PieceColor.WHITE));
+		field[6][0].setPiece(new Knight(6, 0, PieceColor.WHITE));
+		field[7][0].setPiece(new Rook(7, 0, PieceColor.WHITE));
 		for (int i = 0; i < 8; i++) {
-			field[i][1].setPiece(new Pawn(i, 1, Color.WHITE));
+			field[i][1].setPiece(new Pawn(i, 1, PieceColor.WHITE));
 		}
 
 		// BLACK
-		field[0][7].setPiece(new Rook(0, 7, Color.BLACK));
-		field[1][7].setPiece(new Knight(1, 7, Color.BLACK));
-		field[2][7].setPiece(new Bishop(2, 7, Color.BLACK));
-		field[3][7].setPiece(new Queen(3, 7, Color.BLACK));
-		field[4][7].setPiece(new King(4, 7, Color.BLACK));
-		field[5][7].setPiece(new Bishop(5, 7, Color.BLACK));
-		field[6][7].setPiece(new Knight(6, 7, Color.BLACK));
-		field[7][7].setPiece(new Rook(7, 7, Color.BLACK));
+		field[0][7].setPiece(new Rook(0, 7, PieceColor.BLACK));
+		field[1][7].setPiece(new Knight(1, 7, PieceColor.BLACK));
+		field[2][7].setPiece(new Bishop(2, 7, PieceColor.BLACK));
+		field[3][7].setPiece(new Queen(3, 7, PieceColor.BLACK));
+		field[4][7].setPiece(new King(4, 7, PieceColor.BLACK));
+		field[5][7].setPiece(new Bishop(5, 7, PieceColor.BLACK));
+		field[6][7].setPiece(new Knight(6, 7, PieceColor.BLACK));
+		field[7][7].setPiece(new Rook(7, 7, PieceColor.BLACK));
 		for (int i = 0; i < 8; i++) {
-			field[i][6].setPiece(new Pawn(i, 6, Color.BLACK));
+			field[i][6].setPiece(new Pawn(i, 6, PieceColor.BLACK));
 		}
 
 	}
 
-	public boolean move(int fromX, int fromY, int toX, int toY) {
+	public Moveresult move(int fromX, int fromY, int toX, int toY) {
 		if (fromX >= 0 && fromX < 8 && fromY >= 0 && fromY < 8 && toX >= 0 && toX < 8 && toY >= 0 && toY < 8) {
 			Piece piece = field[fromX][fromY].getPiece();
 			if (piece != null) {
@@ -74,19 +74,19 @@ public class GameBoard {
 					this.set(piece, toX, toY);
 					piece.setPosition(to);
 					checkForCheck();
-					if (piece.getColor() == Color.WHITE && whiteCheck
-							|| piece.getColor() == Color.BLACK && blackCheck) {
+					if (piece.getColor() == PieceColor.WHITE && whiteCheck
+							|| piece.getColor() == PieceColor.BLACK && blackCheck) {
 						// System.out.println("ungültiger zug, du bist noch im schach");
 						this.set(piece, fromX, fromY);
 						this.set(hit, toX, toY);
 						piece.setPosition(from);
-						return false;
+						return new Moveresult(null, true, false);
 					}
-					return true;
+					return new Moveresult(hit, false, true);
 				}
 			}
 		}
-		return false;
+		return new Moveresult(null, false, false);
 	}
 
 	public void backwardMove(Change change) {
@@ -112,7 +112,7 @@ public class GameBoard {
 		checkForCheck();
 	}
 
-	public boolean move(String from, String to) {
+	public Moveresult move(String from, String to) {
 		int[] fromInt = alphabetToInt(from);
 		int[] toInt = alphabetToInt(to);
 		return move(fromInt[0], fromInt[1], toInt[0], toInt[1]);
@@ -123,7 +123,7 @@ public class GameBoard {
 			for (int j = 0; j < field[i].length; j++) {
 				if (field[i][j].getPiece() != null) {
 					Piece curPiece = field[i][j].getPiece();
-					if (curPiece.getColor() == Color.WHITE) {
+					if (curPiece.getColor() == PieceColor.WHITE) {
 						for (Position allowedPos : curPiece.getAllowedWithoutKing(this)) {
 							if (get(allowedPos).getPiece() instanceof King) {
 								blackCheck = true;
@@ -140,7 +140,7 @@ public class GameBoard {
 			for (int j = 0; j < field[i].length; j++) {
 				if (field[i][j].getPiece() != null) {
 					Piece curPiece = field[i][j].getPiece();
-					if (curPiece.getColor() == Color.BLACK) {
+					if (curPiece.getColor() == PieceColor.BLACK) {
 						for (Position allowedPos : curPiece.getAllowedWithoutKing(this)) {
 							if (get(allowedPos).getPiece() instanceof King) {
 								whiteCheck = true;

@@ -48,8 +48,8 @@ public class Position {
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")";
-		//return toChessPosition();
+		//return "(" + x + ", " + y + ")";
+		return toChessPosition();
 	}
 
 }

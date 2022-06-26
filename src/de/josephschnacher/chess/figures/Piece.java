@@ -4,17 +4,17 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import de.josephschnacher.chess.logic.Color;
+import de.josephschnacher.chess.logic.PieceColor;
 import de.josephschnacher.chess.logic.GameBoard;
 import de.josephschnacher.chess.logic.Position;
 
 public abstract class Piece {
 
 	private final String name;
-	private final Color color;
+	private final PieceColor color;
 	private Position position;
 
-	public Piece(Position pos, Color color) {
+	public Piece(Position pos, PieceColor color) {
 		this.position = pos;
 		this.name = getClass().getSimpleName();
 		this.color = color;
@@ -55,7 +55,7 @@ public abstract class Piece {
 
 	public abstract char getShortName();
 
-	public Color getColor() {
+	public PieceColor getColor() {
 		return color;
 	}
 

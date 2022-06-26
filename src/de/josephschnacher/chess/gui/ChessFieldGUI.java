@@ -2,10 +2,8 @@ package de.josephschnacher.chess.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -26,6 +24,8 @@ import de.josephschnacher.chess.game.Game;
 import de.josephschnacher.chess.game.Settings;
 import de.josephschnacher.chess.logic.Change;
 import de.josephschnacher.chess.logic.GameBoard;
+import de.josephschnacher.chess.logic.Moveresult;
+import de.josephschnacher.chess.logic.PieceColor;
 import de.josephschnacher.chess.logic.Position;
 
 public class ChessFieldGUI implements KeyListener {
@@ -37,6 +37,7 @@ public class ChessFieldGUI implements KeyListener {
 	private static JButton forward;
 	private static JButton backward;
 	private JButton save;
+	private JLabel messages;
 
 	private int x, y;
 	private List<Position> colors;
@@ -54,18 +55,18 @@ public class ChessFieldGUI implements KeyListener {
 		this.frame = new JFrame();
 		this.clickedPos = null;
 		this.firstMove = true;
+		this.messages = new JLabel("", SwingConstants.CENTER);
 
 		boardPanel = new JPanel();
 
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setup(game, x, y, (screenSize.width - x) / 2, (screenSize.height - y) / 2);
+		setup(game, x, y);
 	}
 
-	public void setup(Game game, int width, int height, int locX, int locY) {
+	public void setup(Game game, int width, int height) {
 		frame.setTitle("Chess");
 		frame.setSize(width, height);
 
-		frame.setLocation(locX, locY);
+		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		boardPanel.setLayout(new GridLayout(8, 8));
@@ -98,11 +99,22 @@ public class ChessFieldGUI implements KeyListener {
 			}
 		}
 
+		/*
+		 * backgroundPanel.setLayout(new GridLayout(8, 8)); JLabel[][] bgLabels = new
+		 * JLabel[8][8]; for (int i = 0; i < fields.length; i++) { for (int j = 0; j <
+		 * fields[i].length; j++) { bgLabels[i][j] = new JLabel(); Color c =
+		 * Settings.BLACK; if (((i + j) & 1) == 1) { c = Settings.WHITE; }
+		 * bgLabels[i][j].setOpaque(true); bgLabels[i][j].setBackground(c);
+		 * bgLabels[i][j].setBounds(i * x, j * y, (int) x / bgLabels.length, (int) y /
+		 * bgLabels[i].length); backgroundPanel.add(bgLabels[i][j]); } }
+		 */
+
 		boardPanel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				Position chessPos = getClickedChessPosition(e.getX(), e.getY());
 
 				if (clickedPos == null) {
+					messages.setText("");
 					if (selected) {
 						removeColors();
 						selected = false;
@@ -110,30 +122,115 @@ public class ChessFieldGUI implements KeyListener {
 					}
 					Piece curPiece = game.getGameBoard().get(chessPos).getPiece();
 					if (curPiece != null) {
+						messages.setText("");
 						setSelectedColor(toNormalPosition(chessPos));
 						if (curPiece.getColor() == game.getCurColorPlaying()) {
 							clickedPos = chessPos;
 							setColors(game.getGameBoard(), toNormalPosition(chessPos));
+						} else {
+							String color = (curPiece.getColor() == PieceColor.WHITE) ? "White" : "Black";
+							messages.setText("It's not " + color + "'s turn!");
 						}
 					}
 
 				} else {
 					removeColors();
 					selected = false;
-					boolean allowedMove = game.move(clickedPos.toChessPosition(), chessPos.toChessPosition());
-					if (!allowedMove) {
+					Moveresult result = game.move(clickedPos.toChessPosition(), chessPos.toChessPosition());
+					if (!result.getOk()) {
 						clickedPos = null;
+						String message = "This position is not allowed";
+						if (result.getCheck()) {
+							if (game.getGameBoard().isWhiteCheck()) {
+								message = "White is still or gets checked...";
+							} else if (game.getGameBoard().isBlackCheck()) {
+								message = "Black is still or gets checked...";
+							}
+
+						}
+						messages.setText(message);
 					} else {
 						if (firstMove) {
 							backward.setForeground(Color.black);
 							backward.setEnabled(true);
 							firstMove = false;
 						}
+						String message = clickedPos.toChessPosition() + " on " + chessPos.toChessPosition();
+						if (result.getHit() != null) {
+							message += " (" + result.getHit().getName() + " got hit!)";
+						}
+						game.getGameBoard().checkForCheck();
+						if (game.getGameBoard().isWhiteCheck()) {
+							message += " => White is CHECKED!";
+						} else if (game.getGameBoard().isBlackCheck()) {
+							message += " => Black is CHECKED!";
+						}
+						messages.setText(message);
 						update(game);
 					}
 				}
 			}
 		});
+
+		// first idea of a dragging element
+		/*
+		 * final MouseAdapter dragger = new MouseAdapter() { private JLabel
+		 * selectedLabel = null; // Clicked label. private Point selectedLabelLocation =
+		 * null; // Location of label in panel when it was clicked. private Point
+		 * panelClickPoint = null; // Panel's click point.
+		 * 
+		 * // Selection of label occurs upon pressing on the panel:
+		 * 
+		 * @Override public void mousePressed(final MouseEvent e) {
+		 * 
+		 * // Find which label is at the press point: final Component pressedComp =
+		 * boardPanel.findComponentAt(e.getX(), e.getY());
+		 * 
+		 * double squareWidth = boardPanel.getSize().getWidth() / 8; double squareHeight
+		 * = boardPanel.getSize().getHeight() / 8;
+		 * 
+		 * int labelX = (int) (e.getX() / squareWidth); int labelY = (int) (e.getY() /
+		 * squareHeight);
+		 * 
+		 * Position clickedPos = new Position(labelX, labelY); frame.setTitle("" +
+		 * clickedPos); // setColors(game.getGameBoard(), clickedPos);
+		 * 
+		 * // If a label is pressed, store it as selected: if (pressedComp != null &&
+		 * pressedComp instanceof JLabel pressedLabel) { selectedLabel = pressedLabel;
+		 * selectedLabelLocation = selectedLabel.getLocation(); panelClickPoint =
+		 * e.getPoint();
+		 * 
+		 * boardPanel.setComponentZOrder(selectedLabel, 0); selectedLabel.repaint(); }
+		 * else { selectedLabel = null; selectedLabelLocation = null; panelClickPoint =
+		 * null; } }
+		 * 
+		 * @Override public void mouseDragged(final MouseEvent e) { if (selectedLabel !=
+		 * null && selectedLabelLocation != null && panelClickPoint != null) {
+		 * 
+		 * final Point newPanelClickPoint = e.getPoint();
+		 * 
+		 * int newX = selectedLabelLocation.x + (newPanelClickPoint.x -
+		 * panelClickPoint.x); int newY = selectedLabelLocation.y +
+		 * (newPanelClickPoint.y - panelClickPoint.y);
+		 * 
+		 * double squareWidth = boardPanel.getSize().getWidth() / 8; double squareHeight
+		 * = boardPanel.getSize().getHeight() / 8;
+		 * 
+		 * int labelX = (int) ((newX + squareWidth / 2) / squareWidth); int labelY =
+		 * (int) ((newY + squareHeight / 2) / squareHeight);
+		 * 
+		 * selectedLabel.setLocation((int) (labelX * squareWidth), (int) (labelY *
+		 * squareHeight)); } }
+		 * 
+		 * @Override public void mouseReleased(final MouseEvent e) {
+		 * System.out.println("released"); update(game); }
+		 * 
+		 * };
+		 * 
+		 * 
+		 * boardPanel.addMouseMotionListener(dragger);
+		 * boardPanel.addMouseListener(dragger);
+		 */
 
 		backward = new JButton("<");
 		forward = new JButton(">");
@@ -149,6 +246,13 @@ public class ChessFieldGUI implements KeyListener {
 				if (change != null) {
 					game.getGameBoard().backwardMove(change);
 					game.switchPlayer();
+					String message = "Step backward";
+					if (game.isWhitePlaying()) {
+						message += " -> It's white's turn!";
+					} else {
+						message += " -> It's black's turn!";
+					}
+					messages.setText(message);
 					if (game.getHistory().getPointer() == 0) {
 						firstMove = true;
 					}
@@ -165,15 +269,24 @@ public class ChessFieldGUI implements KeyListener {
 				if (change != null) {
 					game.getGameBoard().forwardMove(change);
 					game.switchPlayer();
+					String message = "Step forward";
+					if (game.isWhitePlaying()) {
+						message += " -> It's white's turn!";
+					} else {
+						message += " -> It's black's turn!";
+					}
+					messages.setText(message);
 				}
 				updateButtons(game);
 				update(game);
 			}
 		});
 		save = new JButton("Save");
-		save.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
+		save.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				game.getHistory().save(game);
+				messages.setText("You have found the ultimate easter egg!!!");
 			}
 		});
 
@@ -182,9 +295,12 @@ public class ChessFieldGUI implements KeyListener {
 		forAndBackward.add(backward);
 		forAndBackward.add(forward);
 		buttonsPanel.add(forAndBackward, BorderLayout.WEST);
+		buttonsPanel.add(messages, BorderLayout.CENTER);
 		buttonsPanel.add(save, BorderLayout.EAST);
 
 		JPanel wholePanel = new JPanel(new BorderLayout());
+		// backgroundPanel.add(boardPanel, JLabel.NORTH);
+		// wholePanel.add(backgroundPanel, BorderLayout.CENTER);
 		wholePanel.add(boardPanel, BorderLayout.CENTER);
 		wholePanel.add(buttonsPanel, BorderLayout.SOUTH);
 		frame.getContentPane().add(wholePanel);
@@ -282,6 +398,8 @@ public class ChessFieldGUI implements KeyListener {
 			backward.doClick();
 		} else if (e.getKeyCode() == 39) {
 			forward.doClick();
+		} else if (e.getKeyCode() == 10) {
+			save.doClick();
 		}
 	}
 

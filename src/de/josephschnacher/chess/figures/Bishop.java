@@ -3,18 +3,18 @@ package de.josephschnacher.chess.figures;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.josephschnacher.chess.logic.Color;
+import de.josephschnacher.chess.logic.PieceColor;
 import de.josephschnacher.chess.logic.Field;
 import de.josephschnacher.chess.logic.GameBoard;
 import de.josephschnacher.chess.logic.Position;
 
 public class Bishop extends Piece {
 
-	public Bishop(Position pos, Color color) {
+	public Bishop(Position pos, PieceColor color) {
 		super(pos, color);
 	}
 
-	public Bishop(int x, int y, Color color) {
+	public Bishop(int x, int y, PieceColor color) {
 		super(new Position(x, y), color);
 	}
 	
@@ -25,7 +25,7 @@ public class Bishop extends Piece {
 
 	@Override
 	public char getUnicode() {
-		return (getColor() == Color.WHITE) ? '♗' : '♝';
+		return (getColor() == PieceColor.WHITE) ? '♗' : '♝';
 	}
 
 	@Override

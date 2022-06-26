@@ -3,18 +3,18 @@ package de.josephschnacher.chess.figures;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.josephschnacher.chess.logic.Color;
+import de.josephschnacher.chess.logic.PieceColor;
 import de.josephschnacher.chess.logic.Field;
 import de.josephschnacher.chess.logic.GameBoard;
 import de.josephschnacher.chess.logic.Position;
 
 public class Pawn extends Piece {
 
-	public Pawn(Position pos, Color color) {
+	public Pawn(Position pos, PieceColor color) {
 		super(pos, color);
 	}
 
-	public Pawn(int x, int y, Color color) {
+	public Pawn(int x, int y, PieceColor color) {
 		super(new Position(x, y), color);
 	}
 	
@@ -25,14 +25,14 @@ public class Pawn extends Piece {
 	
 	@Override
 	public char getUnicode() {
-		return (getColor() == Color.WHITE) ? '♙' : '♟';
+		return (getColor() == PieceColor.WHITE) ? '♙' : '♟';
 	}
 
 	@Override
 	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		Field[][] field = gameBoard.getField();
-		if (getColor() == Color.WHITE) {
+		if (getColor() == PieceColor.WHITE) {
 			if (getPosition().getY() == 1) {
 				if (field[getPosition().getX()][2].getPiece() == null
 						&& (field[getPosition().getX()][3].getPiece() == null)) {
@@ -47,13 +47,13 @@ public class Pawn extends Piece {
 
 			int newX = getPosition().getX() - 1;
 			if (newY < 8 && newX >= 0 && field[newX][newY].getPiece() != null
-					&& field[newX][newY].getPiece().getColor() == Color.BLACK) {
+					&& field[newX][newY].getPiece().getColor() == PieceColor.BLACK) {
 				allAllowed.add(new Position(newX, newY));
 			}
 
 			newX = getPosition().getX() + 1;
 			if (newY < 8 && newX < 8 && field[newX][newY].getPiece() != null
-					&& field[newX][newY].getPiece().getColor() == Color.BLACK) {
+					&& field[newX][newY].getPiece().getColor() == PieceColor.BLACK) {
 				allAllowed.add(new Position(newX, newY));
 			}
 
@@ -72,13 +72,13 @@ public class Pawn extends Piece {
 
 			int newX = getPosition().getX() - 1;
 			if (newY >= 0 && newX >= 0 && field[newX][newY].getPiece() != null
-					&& field[newX][newY].getPiece().getColor() == Color.WHITE) {
+					&& field[newX][newY].getPiece().getColor() == PieceColor.WHITE) {
 				allAllowed.add(new Position(newX, newY));
 			}
 
 			newX = getPosition().getX() + 1;
 			if (newY >= 0 && newX < 8 && field[newX][newY].getPiece() != null
-					&& field[newX][newY].getPiece().getColor() == Color.WHITE) {
+					&& field[newX][newY].getPiece().getColor() == PieceColor.WHITE) {
 				allAllowed.add(new Position(newX, newY));
 			}
 

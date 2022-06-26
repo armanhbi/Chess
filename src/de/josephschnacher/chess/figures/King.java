@@ -10,15 +10,25 @@ import de.josephschnacher.chess.logic.Position;
 public class King extends Piece {
 
 	public King(Position position, Color color) {
-		super(position, 'K', color);
+		super(position, color);
 	}
 
 	public King(int x, int y, Color color) {
-		super(new Position(x, y), 'K', color);
+		super(new Position(x, y), color);
 	}
 
 	@Override
-	public List<Position> getAllowed(GameBoard gameBoard) {
+	public char getShortName() {
+		return 'K';
+	}
+
+	@Override
+	public char getUnicode() {
+		return (getColor() == Color.WHITE) ? '♔' : '♚';
+	}
+
+	@Override
+	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 		List<Position> allowed = new ArrayList<>();
 		Position curPosition = getPosition();
 		int curX = curPosition.getX();
@@ -37,6 +47,7 @@ public class King extends Piece {
 				}
 			}
 		}
+		
 		return allowed;
 	}
 

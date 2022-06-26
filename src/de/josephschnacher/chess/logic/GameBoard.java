@@ -12,10 +12,14 @@ import de.josephschnacher.chess.figures.Rook;
 
 public class GameBoard {
 
-	private final Field[][] field;
+	private Field[][] field;
+	private boolean whiteCheck;
+	private boolean blackCheck;
 
 	public GameBoard() {
 		this.field = new Field[8][8];
+		whiteCheck = false;
+		blackCheck = false;
 		init();
 	}
 
@@ -56,16 +60,28 @@ public class GameBoard {
 
 	}
 
-	public boolean move(int fromX, int fromY, int toX, int toY, Color currentTurn) {
+	public boolean move(int fromX, int fromY, int toX, int toY) {
 		if (fromX >= 0 && fromX < 8 && fromY >= 0 && fromY < 8 && toX >= 0 && toX < 8 && toY >= 0 && toY < 8) {
 			Piece piece = field[fromX][fromY].getPiece();
-			if (piece != null && piece.getColor() == currentTurn) {
+			if (piece != null) {
+				Position from = new Position(fromX, fromY);
 				Position to = new Position(toX, toY);
 				List<Position> allowed = piece.getAllowed(this);
 				if (allowed.contains(to)) {
+					Piece hit = get(toX, toY).getPiece();
+					get(toX, toY).setPiece(null);
 					this.set(null, fromX, fromY);
 					this.set(piece, toX, toY);
 					piece.setPosition(to);
+					checkForCheck();
+					if (piece.getColor() == Color.WHITE && whiteCheck
+							|| piece.getColor() == Color.BLACK && blackCheck) {
+						// System.out.println("ungültiger zug, du bist noch im schach");
+						this.set(piece, fromX, fromY);
+						this.set(hit, toX, toY);
+						piece.setPosition(from);
+						return false;
+					}
 					return true;
 				}
 			}
@@ -73,10 +89,69 @@ public class GameBoard {
 		return false;
 	}
 
-	public boolean move(String from, String to, Color currentTurn) {
+	public void backwardMove(Change change) {
+		int fromX = change.getTo().getX();
+		int fromY = change.getTo().getY();
+		Piece hit = change.getHit();
+
+		Piece piece = field[fromX][fromY].getPiece();
+		set((hit != null) ? hit : null, change.getTo());
+		set(piece, change.getFrom());
+		piece.setPosition(change.getFrom());
+		checkForCheck();
+	}
+
+	public void forwardMove(Change change) {
+		int fromX = change.getFrom().getX();
+		int fromY = change.getFrom().getY();
+
+		Piece piece = field[fromX][fromY].getPiece();
+		set(null, change.getFrom());
+		set(piece, change.getTo());
+		piece.setPosition(change.getTo());
+		checkForCheck();
+	}
+
+	public boolean move(String from, String to) {
 		int[] fromInt = alphabetToInt(from);
 		int[] toInt = alphabetToInt(to);
-		return move(fromInt[0], fromInt[1], toInt[0], toInt[1], currentTurn);
+		return move(fromInt[0], fromInt[1], toInt[0], toInt[1]);
+	}
+
+	public void checkForCheck() {
+		for (int i = 0; i < field.length; i++) {
+			for (int j = 0; j < field[i].length; j++) {
+				if (field[i][j].getPiece() != null) {
+					Piece curPiece = field[i][j].getPiece();
+					if (curPiece.getColor() == Color.WHITE) {
+						for (Position allowedPos : curPiece.getAllowedWithoutKing(this)) {
+							if (get(allowedPos).getPiece() instanceof King) {
+								blackCheck = true;
+								return;
+							}
+						}
+						blackCheck = false;
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < field.length; i++) {
+			for (int j = 0; j < field[i].length; j++) {
+				if (field[i][j].getPiece() != null) {
+					Piece curPiece = field[i][j].getPiece();
+					if (curPiece.getColor() == Color.BLACK) {
+						for (Position allowedPos : curPiece.getAllowedWithoutKing(this)) {
+							if (get(allowedPos).getPiece() instanceof King) {
+								whiteCheck = true;
+								return;
+							}
+						}
+						whiteCheck = false;
+					}
+				}
+			}
+		}
 	}
 
 	public Field[][] getField() {
@@ -87,12 +162,24 @@ public class GameBoard {
 		return field[x][y];
 	}
 
+	public Field get(Position position) {
+		return field[position.getX()][position.getY()];
+	}
+
 	public Field get(String s) {
 		int[] x = alphabetToInt(s);
 		return field[x[0]][x[1]];
 	}
 
-	private int[] alphabetToInt(String s) {
+	public boolean isWhiteCheck() {
+		return whiteCheck;
+	}
+
+	public boolean isBlackCheck() {
+		return blackCheck;
+	}
+
+	public int[] alphabetToInt(String s) {
 		if (s.length() != 2) {
 			return null;
 		}
@@ -102,12 +189,16 @@ public class GameBoard {
 		return new int[] { x, y };
 	}
 
+	public void set(Piece piece, Position position) {
+		field[position.getX()][position.getY()].setPiece(piece);
+	}
+
 	public void set(Piece piece, int x, int y) {
 		field[x][y].setPiece(piece);
 	}
 
 	public String toString() {
-		String string = "+ - - - - - - - - +\n";
+		String string = "\n+ - - - - - - - - +\n";
 		for (int i = field[0].length - 1; i >= 0; i--) {
 			string += "| ";
 			for (int j = 0; j < field[0].length; j++) {
@@ -116,7 +207,7 @@ public class GameBoard {
 			}
 			string += "|\n";
 		}
-		string += "+ - - - - - - - - +";
+		string += "+ - - - - - - - - +\n";
 		return string;
 	}
 

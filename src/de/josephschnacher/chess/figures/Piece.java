@@ -2,6 +2,8 @@ package de.josephschnacher.chess.figures;
 
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import de.josephschnacher.chess.logic.Color;
 import de.josephschnacher.chess.logic.GameBoard;
 import de.josephschnacher.chess.logic.Position;
@@ -9,15 +11,12 @@ import de.josephschnacher.chess.logic.Position;
 public abstract class Piece {
 
 	private final String name;
-	private final char shortname;
 	private final Color color;
-
 	private Position position;
 
-	public Piece(Position pos, char shortname, Color color) {
+	public Piece(Position pos, Color color) {
 		this.position = pos;
 		this.name = getClass().getSimpleName();
-		this.shortname = shortname;
 		this.color = color;
 	}
 
@@ -28,8 +27,19 @@ public abstract class Piece {
 		}
 		return false;
 	}
+	
+	public abstract List<Position> getAllowedWithoutKing(GameBoard gameBoard);
 
-	public abstract List<Position> getAllowed(GameBoard gameBoard);
+	public List<Position> getAllowed(GameBoard gameBoard) {
+		List<Position> withoutKing = getAllowedWithoutKing(gameBoard);
+		for (Position curPos : withoutKing) {
+			if (gameBoard.get(curPos).getPiece() instanceof King) {
+				withoutKing.remove(curPos);
+				return withoutKing;
+			}
+		}
+		return withoutKing;
+	}
 
 	public Position getPosition() {
 		return position;
@@ -43,19 +53,23 @@ public abstract class Piece {
 		return name;
 	}
 
-	public char getShortName() {
-		return shortname;
-	}
+	public abstract char getShortName();
 
 	public Color getColor() {
 		return color;
+	}
+
+	public abstract char getUnicode();
+
+	public ImageIcon getIcon() {
+		return new ImageIcon("rcs/" + getColor().toString().toUpperCase() + "_" + getName().toUpperCase() + ".png");
 	}
 
 	public String toString() {
 		if (position == null) {
 			return getName();
 		} else {
-			return getName() + ": (" + getPosition().getX() + ", " + getPosition().getY() + ")";
+			return getName() + "(" + getColor() + "): [" + getPosition().getX() + ", " + getPosition().getY() + "]";
 		}
 	}
 

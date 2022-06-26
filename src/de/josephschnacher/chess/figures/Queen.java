@@ -11,15 +11,25 @@ import de.josephschnacher.chess.logic.Position;
 public class Queen extends Piece {
 
 	public Queen(Position position, Color color) {
-		super(position, 'Q', color);
+		super(position, color);
 	}
 
 	public Queen(int x, int y, Color color) {
-		super(new Position(x, y), 'Q', color);
+		super(new Position(x, y), color);
 	}
 
 	@Override
-	public List<Position> getAllowed(GameBoard gameBoard) {
+	public char getShortName() {
+		return 'Q';
+	}
+	
+	@Override
+	public char getUnicode() {
+		return (getColor() == Color.WHITE) ? '♕' : '♛';
+	}
+
+	@Override
+	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		int curX = getPosition().getX();
 		int curY = getPosition().getY();
@@ -80,6 +90,7 @@ public class Queen extends Piece {
 			}
 			x++;
 			y++;
+			inside = x < 8 && y < 8;
 		}
 
 		// diagonal links oben
@@ -93,6 +104,7 @@ public class Queen extends Piece {
 			}
 			x--;
 			y++;
+			inside = x >= 0 && y < 8;
 		}
 
 		// diagonal rechts unten
@@ -106,6 +118,7 @@ public class Queen extends Piece {
 			}
 			x++;
 			y--;
+			inside = x < 8 && y >= 0;
 		}
 
 		// diagonal links unten
@@ -119,6 +132,7 @@ public class Queen extends Piece {
 			}
 			x--;
 			y--;
+			inside = x >= 0 && y >= 0;
 		}
 
 		return allAllowed;

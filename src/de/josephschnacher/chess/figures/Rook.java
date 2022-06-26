@@ -11,15 +11,25 @@ import de.josephschnacher.chess.logic.Position;
 public class Rook extends Piece {
 
 	public Rook(Position pos, Color color) {
-		super(pos, 'R', color);
+		super(pos, color);
 	}
 
 	public Rook(int x, int y, Color color) {
-		super(new Position(x, y), 'R', color);
+		super(new Position(x, y), color);
+	}
+	
+	@Override
+	public char getShortName() {
+		return 'R';
 	}
 
 	@Override
-	public List<Position> getAllowed(GameBoard gameBoard) {
+	public char getUnicode() {
+		return (getColor() == Color.WHITE) ? '♖' : '♜';
+	}
+
+	@Override
+	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		int curX = getPosition().getX();
 		int curY = getPosition().getY();

@@ -25,6 +25,11 @@ public class Position {
 		this.y = y;
 	}
 
+	public void set(Position position) {
+		this.x = position.getX();
+		this.y = position.getY();
+	}
+
 	public String toChessPosition() {
 		char letter = (char) (x + 65);
 		int number = y + 1;
@@ -43,8 +48,8 @@ public class Position {
 
 	@Override
 	public String toString() {
-		// return "(" + x + ", " + y + ")";
-		return toChessPosition();
+		return "(" + x + ", " + y + ")";
+		//return toChessPosition();
 	}
 
 }

@@ -11,15 +11,25 @@ import de.josephschnacher.chess.logic.Position;
 public class Pawn extends Piece {
 
 	public Pawn(Position pos, Color color) {
-		super(pos, 'P', color);
+		super(pos, color);
 	}
 
 	public Pawn(int x, int y, Color color) {
-		super(new Position(x, y), 'P', color);
+		super(new Position(x, y), color);
+	}
+	
+	@Override
+	public char getShortName() {
+		return 'P';
+	}
+	
+	@Override
+	public char getUnicode() {
+		return (getColor() == Color.WHITE) ? '♙' : '♟';
 	}
 
 	@Override
-	public List<Position> getAllowed(GameBoard gameBoard) {
+	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		Field[][] field = gameBoard.getField();
 		if (getColor() == Color.WHITE) {

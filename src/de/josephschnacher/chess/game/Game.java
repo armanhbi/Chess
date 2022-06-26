@@ -1,37 +1,43 @@
 package de.josephschnacher.chess.game;
 
+import de.josephschnacher.chess.figures.Piece;
+import de.josephschnacher.chess.gui.ChessFieldGUI;
+import de.josephschnacher.chess.logic.Change;
 import de.josephschnacher.chess.logic.Color;
 import de.josephschnacher.chess.logic.GameBoard;
+import de.josephschnacher.chess.logic.History;
+import de.josephschnacher.chess.logic.Position;
 import de.josephschnacher.chess.logic.StringType;
 
 public class Game {
 
-	private final GameBoard gameBoard;
+	private GameBoard gameBoard;
 	private boolean whitePlaying;
-
-	private final StringType DEFAULT_STRINGTYPE = StringType.ALPHABET;
+	private History history;
 
 	public Game() {
 		gameBoard = new GameBoard();
+		history = new History();
+		whitePlaying = true;
+
 		gameBoard.init();
 		gameBoard.fillStart();
-		whitePlaying = true;
+		history.log(new Change(new Position(0, 0), new Position(0, 0), null));
 	}
 
-	public boolean move(String form, String to) {
-		Color current = (whitePlaying) ? Color.WHITE : Color.BLACK;
-		boolean success = gameBoard.move(form, to, current);
-		if (success) {
-			whitePlaying = !whitePlaying;
-		}
-		return success;
+	public boolean move(String from, String to) {
+		int[] fromArray = gameBoard.alphabetToInt(from);
+		int[] toArray = gameBoard.alphabetToInt(to);
+		return move(fromArray[0], fromArray[1], toArray[0], toArray[1]);
 	}
 
 	public boolean move(int fromX, int fromY, int toX, int toY) {
-		Color current = (whitePlaying) ? Color.WHITE : Color.BLACK;
-		boolean success = gameBoard.move(fromX, fromY, toX, toY, current);
+		Piece hit = gameBoard.get(toX, toY).getPiece();
+		boolean success = gameBoard.move(fromX, fromY, toX, toY);
 		if (success) {
 			whitePlaying = !whitePlaying;
+			history.log(new Change(new Position(fromX, fromY), new Position(toX, toY), hit));
+			ChessFieldGUI.updateButtons(this);
 		}
 		return success;
 	}
@@ -50,7 +56,7 @@ public class Game {
 	}
 
 	public String toString() {
-		return toString(DEFAULT_STRINGTYPE);
+		return toString(Settings.DEFAULT_STRINGTYPE);
 	}
 
 	public void print(StringType type) {
@@ -58,11 +64,31 @@ public class Game {
 	}
 
 	public void print() {
-		System.out.println(toString(DEFAULT_STRINGTYPE));
+		System.out.println(toString(Settings.DEFAULT_STRINGTYPE));
 	}
-	
+
 	public GameBoard getGameBoard() {
 		return gameBoard;
+	}
+
+	public void setGameBoard(GameBoard gameBoard) {
+		this.gameBoard = gameBoard;
+	}
+
+	public History getHistory() {
+		return history;
+	}
+
+	public boolean isWhitePlaying() {
+		return whitePlaying;
+	}
+
+	public void switchPlayer() {
+		whitePlaying = !whitePlaying;
+	}
+
+	public Color getCurColorPlaying() {
+		return (whitePlaying) ? Color.WHITE : Color.BLACK;
 	}
 
 }

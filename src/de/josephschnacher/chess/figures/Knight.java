@@ -11,15 +11,25 @@ import de.josephschnacher.chess.logic.Position;
 public class Knight extends Piece {
 
 	public Knight(Position pos, Color color) {
-		super(pos, 'N', color);
+		super(pos, color);
 	}
 
 	public Knight(int x, int y, Color color) {
-		super(new Position(x, y), 'N', color);
+		super(new Position(x, y), color);
+	}
+	
+	@Override
+	public char getShortName() {
+		return 'N';
+	}
+	
+	@Override
+	public char getUnicode() {
+		return (getColor() == Color.WHITE) ? '♘' : '♞';
 	}
 
 	@Override
-	public List<Position> getAllowed(GameBoard gameBoard) {
+	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 
 		List<Position> allAllowed = new ArrayList<>();
 		Field[][] field = gameBoard.getField();

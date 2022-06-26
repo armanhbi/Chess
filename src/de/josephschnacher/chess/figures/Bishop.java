@@ -11,15 +11,25 @@ import de.josephschnacher.chess.logic.Position;
 public class Bishop extends Piece {
 
 	public Bishop(Position pos, Color color) {
-		super(pos, 'B', color);
+		super(pos, color);
 	}
 
 	public Bishop(int x, int y, Color color) {
-		super(new Position(x, y), 'B', color);
+		super(new Position(x, y), color);
+	}
+	
+	@Override
+	public char getShortName() {
+		return 'B';
 	}
 
 	@Override
-	public List<Position> getAllowed(GameBoard gameBoard) {
+	public char getUnicode() {
+		return (getColor() == Color.WHITE) ? '♗' : '♝';
+	}
+
+	@Override
+	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		int curX = getPosition().getX();
 		int curY = getPosition().getY();
@@ -36,6 +46,7 @@ public class Bishop extends Piece {
 			}
 			x++;
 			y++;
+			inside = x < 8 && y < 8;
 		}
 
 		// diagonal links oben
@@ -49,6 +60,7 @@ public class Bishop extends Piece {
 			}
 			x--;
 			y++;
+			inside = x >= 0 && y < 8;
 		}
 
 		// diagonal rechts unten
@@ -62,6 +74,7 @@ public class Bishop extends Piece {
 			}
 			x++;
 			y--;
+			inside = x < 8 && y >= 0;
 		}
 
 		// diagonal links unten
@@ -75,6 +88,7 @@ public class Bishop extends Piece {
 			}
 			x--;
 			y--;
+			inside = x >= 0 && y >= 0;
 		}
 		return allAllowed;
 	}

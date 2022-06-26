@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -13,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -80,7 +82,8 @@ public class ChessFieldGUI implements KeyListener {
 				} else {
 					piece = null;
 				}
-				fields[i][j] = new JLabel((piece != null) ? piece.getUnicode() + "" : "", SwingConstants.CENTER);
+				fields[i][j] = new JLabel("", SwingConstants.CENTER);
+				fields[i][j].setText((piece != null) ? piece.getUnicode() + "" : "");
 				fields[i][j].setFont(new Font("Pecita", 0, 50));
 				Color c = Settings.BLACK;
 				if (((i + j) & 1) == 1) {
@@ -286,6 +289,13 @@ public class ChessFieldGUI implements KeyListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				game.getHistory().save(game);
+				ImageIcon icon = new ImageIcon("rcs/icon2.png");
+				frame.setIconImage(icon.getImage());
+				try {
+					Taskbar.getTaskbar().setIconImage(icon.getImage());
+				} catch (Exception x) {
+
+				}
 				messages.setText("You have found the ultimate easter egg!!!");
 			}
 		});
@@ -303,6 +313,15 @@ public class ChessFieldGUI implements KeyListener {
 		// wholePanel.add(backgroundPanel, BorderLayout.CENTER);
 		wholePanel.add(boardPanel, BorderLayout.CENTER);
 		wholePanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+		ImageIcon icon = new ImageIcon("rcs/icon2.png");
+		frame.setIconImage(icon.getImage());
+		try {
+			Taskbar.getTaskbar().setIconImage(icon.getImage());
+		} catch (Exception e) {
+
+		}
+
 		frame.getContentPane().add(wholePanel);
 		frame.addKeyListener(this);
 		frame.setFocusable(true);

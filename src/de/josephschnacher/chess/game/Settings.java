@@ -8,8 +8,7 @@ public class Settings {
 
 	static final StringType DEFAULT_STRINGTYPE = StringType.ALPHABET;
 
-	static final String BLACK_QUEEN = "rcs/BLACK_QUEEN.png";
-
+	// all colors for green (allowed moves), yellow (selected), etc.
 	public static final Color SELECTED = new Color(228, 216, 134);
 	public static final Color ALLOWED = new Color(187, 219, 178);
 	public static final Color BLACK = new Color(234, 218, 185);

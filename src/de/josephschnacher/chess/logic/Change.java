@@ -25,7 +25,7 @@ public class Change {
 	public Piece getHit() {
 		return hit;
 	}
-	
+
 	@Override
 	public String toString() {
 		return from + " -> " + to;

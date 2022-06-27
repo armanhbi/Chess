@@ -21,8 +21,10 @@ public class Game {
 		history = new History();
 		whitePlaying = true;
 
+		// fills the gameboard with all the chess pieces in the beginning
 		gameBoard.init();
 		gameBoard.fillStart();
+		// logs no change -> aligning pointer and history order
 		history.log(new Change(new Position(0, 0), new Position(0, 0), null));
 	}
 
@@ -32,6 +34,8 @@ public class Game {
 		return move(fromArray[0], fromArray[1], toArray[0], toArray[1]);
 	}
 
+	// does a move if the position is allowed, changes the current player, logs
+	// change and updates the buttons if needed
 	public Moveresult move(int fromX, int fromY, int toX, int toY) {
 		Piece hit = gameBoard.get(toX, toY).getPiece();
 		Moveresult result = gameBoard.move(fromX, fromY, toX, toY);
@@ -86,6 +90,10 @@ public class Game {
 
 	public void switchPlayer() {
 		whitePlaying = !whitePlaying;
+	}
+
+	public void setWhitePlaying(boolean whitePlaying) {
+		this.whitePlaying = whitePlaying;
 	}
 
 	public PieceColor getCurColorPlaying() {

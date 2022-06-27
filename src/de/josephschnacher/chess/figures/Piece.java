@@ -10,6 +10,16 @@ import de.josephschnacher.chess.logic.Position;
 
 public abstract class Piece {
 
+	// All pieces extend from this class
+	/*
+	 * Every piece has got a
+	 * - name (class name)
+	 * - color
+	 * - the position they are on
+	 * - shortname ('N' for Knight)
+	 * - unicode (chess piece in ascii)
+	 * - icon (always COLOR_NAME.png in rcs folder) -> not used
+	 */
 	private final String name;
 	private final PieceColor color;
 	private Position position;
@@ -20,6 +30,7 @@ public abstract class Piece {
 		this.color = color;
 	}
 
+	// not used -> returns if piece is allowed to move to the given position
 	public boolean isAllowed(GameBoard gameBoard, Position position) {
 		List<Position> allAllowed = getAllowed(gameBoard);
 		if (allAllowed.contains(position)) {
@@ -27,9 +38,12 @@ public abstract class Piece {
 		}
 		return false;
 	}
-	
+
+	// Returns a list with all the possible positions the piece can go (including
+	// the king)
 	public abstract List<Position> getAllowedWithoutKing(GameBoard gameBoard);
 
+	// because the king cannnot be hit -> it is removed from the list
 	public List<Position> getAllowed(GameBoard gameBoard) {
 		List<Position> withoutKing = getAllowedWithoutKing(gameBoard);
 		for (Position curPos : withoutKing) {

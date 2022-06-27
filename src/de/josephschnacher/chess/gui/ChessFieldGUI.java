@@ -39,6 +39,7 @@ public class ChessFieldGUI implements KeyListener {
 	private static JButton forward;
 	private static JButton backward;
 	private JButton save;
+	private JButton load;
 	private JLabel messages;
 
 	private int x, y;
@@ -49,6 +50,7 @@ public class ChessFieldGUI implements KeyListener {
 	private Position clickedPos;
 
 	public ChessFieldGUI(int x, int y, Game game) {
+		// Setting up all the important JFrame contents and other variables
 		this.x = x;
 		this.y = y;
 		this.selected = false;
@@ -61,6 +63,7 @@ public class ChessFieldGUI implements KeyListener {
 
 		boardPanel = new JPanel();
 
+		// setting up the main boardPanel
 		setup(game, x, y);
 	}
 
@@ -73,6 +76,7 @@ public class ChessFieldGUI implements KeyListener {
 
 		boardPanel.setLayout(new GridLayout(8, 8));
 
+		// Setting up 2D-array of JLabels showing the chess pieces
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
 				Piece piece;
@@ -112,15 +116,20 @@ public class ChessFieldGUI implements KeyListener {
 		 * bgLabels[i].length); backgroundPanel.add(bgLabels[i][j]); } }
 		 */
 
+		// Mouse Click on JLabel resulting in showing allowed moves and moving the piece
 		boardPanel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				Position chessPos = getClickedChessPosition(e.getX(), e.getY());
 
+				// curPos == null if nothing clicked or wrong click
 				if (clickedPos == null) {
 					messages.setText("");
 					if (selected) {
 						removeColors();
 						selected = false;
+						return;
+					}
+					if (game.getGameBoard().get(chessPos) == null) {
 						return;
 					}
 					Piece curPiece = game.getGameBoard().get(chessPos).getPiece();
@@ -129,6 +138,7 @@ public class ChessFieldGUI implements KeyListener {
 						setSelectedColor(toNormalPosition(chessPos));
 						if (curPiece.getColor() == game.getCurColorPlaying()) {
 							clickedPos = chessPos;
+							// sets all colors (yellow and green)
 							setColors(game.getGameBoard(), toNormalPosition(chessPos));
 						} else {
 							String color = (curPiece.getColor() == PieceColor.WHITE) ? "White" : "Black";
@@ -140,6 +150,7 @@ public class ChessFieldGUI implements KeyListener {
 					removeColors();
 					selected = false;
 					Moveresult result = game.move(clickedPos.toChessPosition(), chessPos.toChessPosition());
+					// if the move is not in the allowed area
 					if (!result.getOk()) {
 						clickedPos = null;
 						String message = "This position is not allowed";
@@ -153,6 +164,8 @@ public class ChessFieldGUI implements KeyListener {
 						}
 						messages.setText(message);
 					} else {
+						// else the game.gameboard is changed and update runs which will match the
+						// boardPanel with the gameboard
 						if (firstMove) {
 							backward.setForeground(Color.black);
 							backward.setEnabled(true);
@@ -235,6 +248,7 @@ public class ChessFieldGUI implements KeyListener {
 		 * boardPanel.addMouseListener(dragger);
 		 */
 
+		// Including all buttons
 		backward = new JButton("<");
 		forward = new JButton(">");
 		forward.setForeground(Color.GRAY);
@@ -245,6 +259,7 @@ public class ChessFieldGUI implements KeyListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// If backwards clicked -> given change will be changed and panel gets updated
 				Change change = game.getHistory().previous();
 				if (change != null) {
 					game.getGameBoard().backwardMove(change);
@@ -265,7 +280,7 @@ public class ChessFieldGUI implements KeyListener {
 			}
 		});
 		forward.addActionListener(new ActionListener() {
-
+			// same but in forward direction, if no more elements -> button is disabled
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Change change = game.getHistory().next();
@@ -284,29 +299,48 @@ public class ChessFieldGUI implements KeyListener {
 				update(game);
 			}
 		});
+		// no real implementation -> idea: all changes to a file and later loading it in
 		save = new JButton("Save");
+		save.setFocusable(false);
 		save.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				game.getHistory().save(game);
-				ImageIcon icon = new ImageIcon("rcs/icon2.png");
-				frame.setIconImage(icon.getImage());
-				try {
-					Taskbar.getTaskbar().setIconImage(icon.getImage());
-				} catch (Exception x) {
-
-				}
-				messages.setText("You have found the ultimate easter egg!!!");
+				game.getHistory().save();
 			}
 		});
 
+		load = new JButton("Load");
+		load.setFocusable(false);
+		load.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Change> changes = game.getHistory().load();
+				updateButtons(game);
+				removeColors();
+				game.getGameBoard().init();
+				game.getGameBoard().fillStart();
+				for (Change change : changes) {
+					game.getGameBoard().forwardMove(change);
+				}
+				game.setWhitePlaying((changes.size() & 1) == 1);
+
+				update(game);
+				updateButtons(game);
+			}
+		});
+
+		// Adding all components into their panel and wholePanel to frame, setting frame
+		// icon, keylistener, etc.
 		JPanel buttonsPanel = new JPanel(new BorderLayout());
 		JPanel forAndBackward = new JPanel(new GridLayout(1, 2));
 		forAndBackward.add(backward);
 		forAndBackward.add(forward);
 		buttonsPanel.add(forAndBackward, BorderLayout.WEST);
 		buttonsPanel.add(messages, BorderLayout.CENTER);
-		buttonsPanel.add(save, BorderLayout.EAST);
+		JPanel saveAndLoad = new JPanel(new GridLayout(1, 2));
+		saveAndLoad.add(load);
+		saveAndLoad.add(save);
+		buttonsPanel.add(saveAndLoad, BorderLayout.EAST);
 
 		JPanel wholePanel = new JPanel(new BorderLayout());
 		// backgroundPanel.add(boardPanel, JLabel.NORTH);
@@ -329,6 +363,7 @@ public class ChessFieldGUI implements KeyListener {
 		frame.setVisible(true);
 	}
 
+	// updated the fields array to the current state in game.gameboard
 	public void update(Game game) {
 		clickedPos = null;
 		for (int i = 0; i < fields.length; i++) {
@@ -345,6 +380,8 @@ public class ChessFieldGUI implements KeyListener {
 		}
 	}
 
+	// updates buttons if the history is not continued or the pointer is on 0 -> no
+	// more backwards elements
 	public static void updateButtons(Game game) {
 		int pointer = game.getHistory().getPointer();
 		if (pointer == 0) {
@@ -363,6 +400,7 @@ public class ChessFieldGUI implements KeyListener {
 		}
 	}
 
+	// sets colors for allowed moves and current selected piece
 	public void setColors(GameBoard gameBoard, Position normalPos) {
 		setSelectedColor(normalPos);
 
@@ -389,6 +427,8 @@ public class ChessFieldGUI implements KeyListener {
 		colors = new ArrayList<>();
 	}
 
+	// Calculation of normal position of fields 2d array to chess position (starting
+	// from bottom-left and not top-left)
 	public Position toNormalPosition(Position pos) {
 		return new Position(7 - pos.getY(), pos.getX());
 	}
@@ -411,6 +451,8 @@ public class ChessFieldGUI implements KeyListener {
 	public void keyTyped(KeyEvent e) {
 	}
 
+	// If arrowkeys (/enter) is clicked, button for history back-/forward is clicked
+	// -> controlling history easier
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == 37) {

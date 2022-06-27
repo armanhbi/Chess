@@ -31,6 +31,7 @@ public class GameBoard {
 		}
 	}
 
+	// fills initial chess pieces to board
 	public void fillStart() {
 		// WHITE
 		field[0][0].setPiece(new Rook(0, 0, PieceColor.WHITE));
@@ -89,6 +90,7 @@ public class GameBoard {
 		return new Moveresult(null, false, false);
 	}
 
+	// applies changes in backward direction
 	public void backwardMove(Change change) {
 		int fromX = change.getTo().getX();
 		int fromY = change.getTo().getY();
@@ -101,6 +103,7 @@ public class GameBoard {
 		checkForCheck();
 	}
 
+	// applies changes in forward direction
 	public void forwardMove(Change change) {
 		int fromX = change.getFrom().getX();
 		int fromY = change.getFrom().getY();
@@ -118,6 +121,7 @@ public class GameBoard {
 		return move(fromInt[0], fromInt[1], toInt[0], toInt[1]);
 	}
 
+	// checks if any king of color is checked (goes through all of the pieces)
 	public void checkForCheck() {
 		for (int i = 0; i < field.length; i++) {
 			for (int j = 0; j < field[i].length; j++) {
@@ -163,7 +167,10 @@ public class GameBoard {
 	}
 
 	public Field get(Position position) {
-		return field[position.getX()][position.getY()];
+		if (position.getX() >= 0 && position.getX() < 8 && position.getY() >= 0 && position.getY() < 8) {
+			return field[position.getX()][position.getY()];
+		}
+		return null;
 	}
 
 	public Field get(String s) {
@@ -179,6 +186,7 @@ public class GameBoard {
 		return blackCheck;
 	}
 
+	// translates normal position into chess languages (e.g. D5)
 	public int[] alphabetToInt(String s) {
 		if (s.length() != 2) {
 			return null;
@@ -197,6 +205,7 @@ public class GameBoard {
 		field[x][y].setPiece(piece);
 	}
 
+	// turns chess field into string (small version)
 	public String toString() {
 		String string = "\n+ - - - - - - - - +\n";
 		for (int i = field[0].length - 1; i >= 0; i--) {
@@ -211,6 +220,7 @@ public class GameBoard {
 		return string;
 	}
 
+	// "" big version -> without chess directions
 	public String toStringBig() {
 		String string = "+-----------------------------------+\n";
 		string += "|                                   |\n";
@@ -227,6 +237,7 @@ public class GameBoard {
 		return string;
 	}
 
+	// with chess directions
 	public String toStringAlphabet() {
 		String string = "+-----------------------------------+\n";
 		string += "|                                   |\n";

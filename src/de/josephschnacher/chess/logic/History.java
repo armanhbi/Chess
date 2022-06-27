@@ -62,7 +62,7 @@ public class History {
 	// saves the gamestate to a file and loads it in later
 	public void save() {
 		JFileChooser fileChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Textfile (.txt)", "txt", "text");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Textfile (.chss)", "chss");
 		fileChooser.setFileFilter(filter);
 		fileChooser.setDialogTitle("Choose where you want to save your file");
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -85,14 +85,15 @@ public class History {
 			}
 
 			String name = file.getName();
-			if (name.length() < 4 || !name.substring(name.indexOf("."), name.length()).equals(".txt")) {
+			if (name.length() < 4 || name.indexOf(".") == -1
+					|| !name.substring(name.indexOf("."), name.length()).equals(".chss")) {
 				Path source = Paths.get(file.getAbsolutePath());
 				try {
 					String fileName = file.getName();
 					if (fileName.indexOf(".") != -1) {
 						fileName = fileName.substring(0, fileName.indexOf("."));
 					}
-					Files.move(source, source.resolveSibling(fileName + ".txt"));
+					Files.move(source, source.resolveSibling(fileName + ".chss"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -104,7 +105,7 @@ public class History {
 	public List<Change> load() {
 		List<Change> changes = new ArrayList<>();
 		JFileChooser fileChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Textfile (.txt)", "txt", "text");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Textfile (.chss)", "chss");
 		fileChooser.setFileFilter(filter);
 		fileChooser.setDialogTitle("Choose the file you want to load");
 		int pointer = -1;

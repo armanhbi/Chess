@@ -29,7 +29,7 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
+	public List<Position> getAllowedWithKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		Field[][] field = gameBoard.getField();
 		if (getColor() == PieceColor.WHITE) {

@@ -28,7 +28,7 @@ public class King extends Piece {
 	}
 
 	@Override
-	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
+	public List<Position> getAllowedWithKing(GameBoard gameBoard) {
 		List<Position> allowed = new ArrayList<>();
 		Position curPosition = getPosition();
 		int curX = curPosition.getX();

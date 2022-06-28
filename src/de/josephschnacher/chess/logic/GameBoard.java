@@ -128,13 +128,13 @@ public class GameBoard {
 				if (field[i][j].getPiece() != null) {
 					Piece curPiece = field[i][j].getPiece();
 					if (curPiece.getColor() == PieceColor.WHITE) {
-						for (Position allowedPos : curPiece.getAllowedWithoutKing(this)) {
+						for (Position allowedPos : curPiece.getAllowedWithKing(this)) {
 							if (get(allowedPos).getPiece() instanceof King) {
 								blackCheck = true;
-								return;
+								break;
 							}
+							blackCheck = false;
 						}
-						blackCheck = false;
 					}
 				}
 			}
@@ -145,7 +145,7 @@ public class GameBoard {
 				if (field[i][j].getPiece() != null) {
 					Piece curPiece = field[i][j].getPiece();
 					if (curPiece.getColor() == PieceColor.BLACK) {
-						for (Position allowedPos : curPiece.getAllowedWithoutKing(this)) {
+						for (Position allowedPos : curPiece.getAllowedWithKing(this)) {
 							if (get(allowedPos).getPiece() instanceof King) {
 								whiteCheck = true;
 								return;

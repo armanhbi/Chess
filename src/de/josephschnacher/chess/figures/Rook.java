@@ -29,7 +29,7 @@ public class Rook extends Piece {
 	}
 
 	@Override
-	public List<Position> getAllowedWithoutKing(GameBoard gameBoard) {
+	public List<Position> getAllowedWithKing(GameBoard gameBoard) {
 		List<Position> allAllowed = new ArrayList<>();
 		int curX = getPosition().getX();
 		int curY = getPosition().getY();

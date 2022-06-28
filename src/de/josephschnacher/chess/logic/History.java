@@ -70,6 +70,8 @@ public class History {
 			try {
 				FileWriter fw = new FileWriter(file);
 				fw.write(pointer + "\n");
+				System.out.println(pointer);
+				System.out.println(history);
 				for (int i = 0; i < pointer + 1; i++) {
 					Change cur = history.get(i);
 					String line = "";

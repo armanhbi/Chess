@@ -41,11 +41,11 @@ public abstract class Piece {
 
 	// Returns a list with all the possible positions the piece can go (including
 	// the king)
-	public abstract List<Position> getAllowedWithoutKing(GameBoard gameBoard);
+	public abstract List<Position> getAllowedWithKing(GameBoard gameBoard);
 
 	// because the king cannnot be hit -> it is removed from the list
 	public List<Position> getAllowed(GameBoard gameBoard) {
-		List<Position> withoutKing = getAllowedWithoutKing(gameBoard);
+		List<Position> withoutKing = getAllowedWithKing(gameBoard);
 		for (Position curPos : withoutKing) {
 			if (gameBoard.get(curPos).getPiece() instanceof King) {
 				withoutKing.remove(curPos);
